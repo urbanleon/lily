@@ -1,5 +1,7 @@
-speechrecognition
+sounddevice
+scipy
+openai-whisper
 pyttsx3
-pyaudio
+speechrecognition
 requests
 beautifulsoup4

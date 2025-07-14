@@ -1,16 +1,17 @@
 import sounddevice as sd
 import scipy.io.wavfile as wav
 import whisper
+import pyttsx3
 import os
 
-COMMANDS = {
-    "open calculator": lambda: os.system("calc" if os.name == "nt" else "gnome-calculator"),
-    "hello": lambda: print("Hi Leo, how can I help you?"),
-    "exit": lambda: exit(0),
-}
+def speak(text):
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
 
 def record_audio(filename="input.wav", duration=5, samplerate=44100):
     print("🎙️ Recording for", duration, "seconds...")
+    speak("Listening now")
     recording = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1, dtype='int16')
     sd.wait()
     wav.write(filename, samplerate, recording)
@@ -23,19 +24,22 @@ def transcribe_audio(filename="input.wav"):
     return result["text"].lower().strip()
 
 def handle_command(text):
-    for command, action in COMMANDS.items():
-        if command in text:
-            print(f"⚙️ Executing command: {command}")
-            action()
-            return
-    print("❓ Command not recognized.")
+    if "hello" in text:
+        speak("Hi Leo, how can I help you?")
+    elif "open calculator" in text:
+        os.system("start calc")
+    elif "exit" in text:
+        speak("Goodbye!")
+        exit()
+    else:
+        speak("I didn't understand that.")
 
 def main():
-    print("🧠 LILY is listening. Speak clearly after the beep.")
+    speak("LILY is ready.")
     while True:
         record_audio()
-        spoken_text = transcribe_audio()
-        handle_command(spoken_text)
+        command = transcribe_audio()
+        handle_command(command)
 
 if __name__ == "__main__":
     main()
